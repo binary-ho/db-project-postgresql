@@ -6,18 +6,17 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class InitDBService implements CommandLineRunner {
 
     private final ParsingService parsingService;
-    private final JpaStudentRepository jpaStudentRepository;
+    private final JpaStudentRepository studentRepository;
 
     @Override
     public void run(String... args) throws Exception {
         List<Student> students = parsingService.getStudentsList();
-        jpaStudentRepository.saveAll(students);
+        studentRepository.saveAll(students);
     }
 }

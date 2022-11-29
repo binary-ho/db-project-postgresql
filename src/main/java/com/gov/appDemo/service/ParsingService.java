@@ -2,6 +2,8 @@ package com.gov.appDemo.service;
 
 import com.gov.appDemo.domain.DegreeMap;
 import com.gov.appDemo.domain.Student;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -10,12 +12,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 @Service
 public class ParsingService {
@@ -32,16 +28,16 @@ public class ParsingService {
         Elements elementsByAttribute = document.getElementsByAttribute(attributeKey);
         List<ElementDto> studentElements = new ArrayList<>();
 
-        int idx = 0;
+        int degree = 0;
         for (Element element : elementsByAttribute) {
             if (!element.attr(attributeKey).contains(attributeValue)) {
                 continue;
             }
             Elements liTagList = element.getElementsByTag("li");
             for (Element li : liTagList) {
-                studentElements.add(new ElementDto(li, idx));
+                studentElements.add(new ElementDto(li, degree));
             }
-            idx++;
+            degree++;
         }
         return studentElements;
     }
@@ -55,7 +51,7 @@ public class ParsingService {
             student.setName(fieldArray[0].trim());
             student.setEmail(fieldArray[1].trim());
             student.setGraduation(fieldArray[2].trim());
-            student.setDegree(degreeMap.get(element.getIdx()));
+            student.setDegree(degreeMap.get(element.getDegree()));
             students.add(student);
         });
         return students;
@@ -73,11 +69,11 @@ public class ParsingService {
     @Data
     static class ElementDto {
         
-    	int idx;
+    	int degree;
     	Element element;
-        ElementDto(Element element, int idx) {
+        ElementDto(Element element, int degree) {
             this.element = element;
-            this.idx = idx;
+            this.degree = degree;
         }
     }
 }
