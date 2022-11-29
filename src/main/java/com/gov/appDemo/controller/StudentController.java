@@ -20,25 +20,29 @@ public class StudentController {
     private final JpaStudentRepository studentRepository;
 
     @PutMapping("/register")
-    public String getStudentEmail(
+    public String registerStudent(
         @RequestParam(value = "name") String name,
         @RequestParam(value = "email") String email,
         @RequestParam(value = "graduation") String graduation,
         @RequestParam(value = "degree") String degree) {
+
         Student student = new Student();
         student.setName(name);
         student.setEmail(email);
         student.setGraduation(graduation);
         student.setDegree(degree);
 
-        if (!studentRepository.save(student)) return "Already registered";
+        if (studentRepository.hasStudent(student)) {
+            return "Already registered";
+        }
+
+        studentRepository.save(student);
         return "Registration successful";
     }
 
     @GetMapping("/degree")
-    public String getStudentDegreeByName(@RequestParam(value = "name") String name)
-        throws Exception {
-        List<Student> students = studentRepository.findByName(name);
+    public String getStudentDegreeByName(@RequestParam(value = "name") String name) {
+        List<Student> students = studentRepository.findStudentByName(name);
 
         if (students.isEmpty()) {
             return "No such student";
@@ -52,9 +56,8 @@ public class StudentController {
     }
 
     @GetMapping("/email")
-    public String getStudentEmailByDegree(@RequestParam(value = "name") String name)
-        throws Exception {
-        List<Student> students = studentRepository.findByName(name);
+    public String getStudentEmailByName(@RequestParam(value = "name") String name) {
+        List<Student> students = studentRepository.findStudentByName(name);
 
         if (students.isEmpty()) {
             return "No such student";
@@ -68,10 +71,9 @@ public class StudentController {
     }
 
     @GetMapping("/stat")
-    public String getNumberOfStudentByDegree(@RequestParam(value = "degree") String degree)
-        throws Exception {
+    public String getTheNumberOfStudentByDegree(@RequestParam(value = "degree") String degree) {
         String degreeString = degree.substring(0, 1).toUpperCase() + degree.substring(1);
-        return "Number of " + degreeString + "'s student : " +
-            studentRepository.countStudentByDegree(degree);
+        return "Number of " + degreeString + "'s student : "
+            + studentRepository.countStudentByDegree(degree);
     }
 }
